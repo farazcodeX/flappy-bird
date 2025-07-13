@@ -1,6 +1,6 @@
 import javax.swing.JFrame;
 
-public class Main {
+public class main {
 
     public static void main(String[] args) {
         int width = 360;
@@ -15,6 +15,7 @@ public class Main {
         Gamepanel gp = new Gamepanel();
 
         frame.add(gp);
+        frame.pack();
 
         frame.setVisible(true);
 
