@@ -12,9 +12,8 @@ public class Bird {
     public int birdHeight = 24;
     public BufferedImage image;
     private float velocity = 0;
-    private final float gravity = 0.3f;
-    private final float jumpStrength = -6;
-
+    private final float gravity = 0.25f;
+    private final float jumpStrength = -5;
 
     public Bird(int x, int y) {
         this.x = x;
@@ -35,12 +34,13 @@ public class Bird {
         velocity += gravity;
         y += velocity;
 
-        if (y < 0) y = 0;
+        if (y < 0)
+            y = 0;
     }
 
     public void draw(Graphics2D g2d) {
         g2d.drawImage(image, x, y, birdWidth, birdHeight, null);
-        
+
     }
-  
+
 }

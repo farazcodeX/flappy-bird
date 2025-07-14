@@ -8,7 +8,7 @@ public class Pipe {
     int height;
     BufferedImage image;
     public boolean passed = false;
-    public int speed = 3;
+    public int speed = 7;
 
     public Pipe(BufferedImage image, int y, int height) {
         this.image = image;
