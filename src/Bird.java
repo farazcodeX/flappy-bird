@@ -12,8 +12,8 @@ public class Bird {
     public int birdHeight = 24;
     public BufferedImage image;
     private float velocity = 0;
-    private final float gravity = 0.5f;
-    private final float jumpStrength = -8;
+    private final float gravity = 0.3f;
+    private final float jumpStrength = -6;
 
 
     public Bird(int x, int y) {
