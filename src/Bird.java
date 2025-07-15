@@ -13,7 +13,7 @@ public class Bird {
     public BufferedImage image;
     private float velocity = 0;
     private final float gravity = 0.25f;
-    private final float jumpStrength = -5;
+    private final float jumpStrength = -6;
 
     public Bird(int x, int y) {
         this.x = x;
@@ -24,6 +24,22 @@ public class Bird {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public int getWidth() {
+        return birdWidth;
+    }
+
+    public int getHeight() {
+        return birdHeight;
     }
 
     public void jump() {

@@ -7,7 +7,7 @@ import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
-public class main {
+public class Main {
 
     public static void main(String[] args) {
         int width = 360;

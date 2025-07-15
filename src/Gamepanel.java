@@ -17,18 +17,19 @@ public class Gamepanel extends JPanel implements Runnable {
     public static int width = 360;
     public static int height = 640;
 
-    private BufferedImage background, upperPipe, lowerPipe;
+    private BufferedImage background, upperPipe, lowerPipe, pause, overPanel;
     public Bird bird = new Bird(width / 8, height / 2);
     private Thread mainThread;
     KeyHandler keyHandler = new KeyHandler();
+    private boolean gameOver = false;
 
     // temp ---------
-    public final int pipeDelata = 30;
+    public final int pipeDelata = 35;
     private ArrayList<Pipe> pipes = new ArrayList<>();
-    private int pipeMoveInterval = 87;
+    private int pipeMoveInterval = 4;
     public int pipeMoveCounter = 0;
     public int pipeSpawnCounter = 0;
-    public int pipeSpawnInterval = 35;
+    public int pipeSpawnInterval = 170;
 
     // --------
 
@@ -54,6 +55,8 @@ public class Gamepanel extends JPanel implements Runnable {
             // bird = ImageIO.read(getClass().getResource("/assets/flappybird.png"));
             lowerPipe = ImageIO.read(getClass().getResource("/assets/bottompipe.png"));
             upperPipe = ImageIO.read(getClass().getResource("/assets/toppipe.png"));
+            pause = ImageIO.read(getClass().getResource("/assets/ChatGPT Image Jul 15, 2025, 04_59_12 PM.png"));
+            overPanel = ImageIO.read(getClass().getResource("/assets/game_over_360x640.png"));
 
             /*
              * background = ImageIO.read(new
@@ -71,6 +74,7 @@ public class Gamepanel extends JPanel implements Runnable {
              */
         } catch (IOException e) {
             e.printStackTrace();
+
         }
     }
 
@@ -104,39 +108,57 @@ public class Gamepanel extends JPanel implements Runnable {
 
         Graphics2D g2d = (Graphics2D) g;
 
+        if (gameOver) {
+            g2d.drawImage(overPanel, 0, 0, width, height, null);
+            return;
+        }
+
         g2d.drawImage(background, 0, 0, width, height, null);
         bird.draw(g2d);
         pipes.stream().forEach(p -> p.draw(g2d));
+
+        if (KeyHandler.pause) {
+            // g2d.setColor(Color.orange);
+            // g2d.fillRoundRect(100, 210, 160, 90, 10, 10);
+            g2d.drawImage(pause, 100, 210, 160, 90, null);
+
+        }
     }
 
     public void update() {
 
-        ++pipeMoveCounter;
-        ++pipeSpawnCounter;
+        if (gameOver == false && KeyHandler.pause == false) {
+            ++pipeMoveCounter;
+            ++pipeSpawnCounter;
 
-        if (keyHandler.move) {
-            bird.jump();
-            keyHandler.move = false;
-        }
-        bird.update();
-
-        if (pipeMoveCounter >= pipeMoveInterval) {
-            Iterator<Pipe> it = pipes.iterator();
-            while (it.hasNext()) {
-                Pipe p = it.next();
-                p.update();
-                if (p.isOffScreen()) {
-                    it.remove(); // safe removal
-                }
+            if (keyHandler.move) {
+                bird.jump();
+                keyHandler.move = false;
             }
-        }
+            bird.update();
 
-        if (pipeSpawnCounter >= pipeSpawnInterval) {
-            spawnPipes();
-            pipeSpawnCounter = 0;
+            if (pipeMoveCounter >= pipeMoveInterval) {
+                Iterator<Pipe> it = pipes.iterator();
+                while (it.hasNext()) {
+                    Pipe p = it.next();
+                    p.update();
+                    if (p.isOffScreen()) {
+                        it.remove(); 
+                    }
+                }
+                pipeMoveCounter = 0;
+            }
+
+            if (pipeSpawnCounter >= pipeSpawnInterval) {
+                spawnPipes();
+                pipeSpawnCounter = 0;
+            }
+
+            checkCollision();
         }
 
     }
+
 
     @Override
     public void run() {
@@ -158,4 +180,39 @@ public class Gamepanel extends JPanel implements Runnable {
             lastTime = currentTime;// update our lastTime
         }
     }
+
+    // temp
+    public void checkCollision() {
+
+        int birdX = bird.getX();
+        int birdY = bird.getY();
+        int birdWidth = bird.getWidth();
+        int birdHeight = bird.getHeight();
+
+        if (birdY + birdHeight >= height) {
+            gameOver = true;
+            return;
+        }
+
+        if (birdY <= 0) {
+            gameOver = true;
+            return;
+        }
+
+        for (Pipe pipe : pipes) {
+            int pipeX = pipe.x;
+            int pipeY = pipe.y;
+            int pipeWidth = pipe.width;
+            int pipeHeight = pipe.height;
+
+            boolean intersectsX = birdX + birdWidth > pipeX && birdX < pipeX + pipeWidth;
+            boolean intersectsY = birdY + birdHeight > pipeY && birdY < pipeY + pipeHeight;
+
+            if (intersectsX && intersectsY) {
+                gameOver = true;
+                return;
+            }
+        }
+    }
+
 }

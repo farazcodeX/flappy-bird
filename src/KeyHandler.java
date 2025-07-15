@@ -4,6 +4,7 @@ import java.awt.event.KeyListener;
 public class KeyHandler implements KeyListener{
 
     public static boolean move = false;
+    public static boolean pause = false;
 
     @Override
     public void keyTyped(KeyEvent e) {
@@ -15,6 +16,16 @@ public class KeyHandler implements KeyListener{
         if(e.getKeyCode() == KeyEvent.VK_SPACE) {
             move = true;
         }
+
+        if(e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+            if(pause) {
+                pause = false;
+            } else {
+                pause = true;
+            }
+        }
+
+        
     }
 
     @Override
