@@ -1,8 +1,12 @@
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -23,7 +27,10 @@ public class Gamepanel extends JPanel implements Runnable {
     KeyHandler keyHandler = new KeyHandler();
     private boolean gameOver = false;
 
-    // temp ---------
+    // score stuff
+    public int score = 0;
+
+    // ok they are working ---------
     public final int pipeDelata = 35;
     private ArrayList<Pipe> pipes = new ArrayList<>();
     private int pipeMoveInterval = 4;
@@ -116,6 +123,7 @@ public class Gamepanel extends JPanel implements Runnable {
         g2d.drawImage(background, 0, 0, width, height, null);
         bird.draw(g2d);
         pipes.stream().forEach(p -> p.draw(g2d));
+        writeDialogd(g2d);
 
         if (KeyHandler.pause) {
             // g2d.setColor(Color.orange);
@@ -123,6 +131,36 @@ public class Gamepanel extends JPanel implements Runnable {
             g2d.drawImage(pause, 100, 210, 160, 90, null);
 
         }
+    }
+
+    public void writeDialogd(Graphics2D g2d) {
+
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        int boxX = 20;
+        int boxY = 570;
+        int boxWidth = 320;
+        int boxHeight = 50;
+
+        GradientPaint gradient = new GradientPaint(boxX, boxY, new Color(50, 50, 200, 180),
+                boxX + boxWidth, boxY + boxHeight, new Color(100, 100, 255, 180));
+        g2d.setPaint(gradient);
+        g2d.fillRoundRect(boxX, boxY, boxWidth, boxHeight, 25, 25);
+
+        g2d.setColor(Color.WHITE);
+        g2d.setStroke(new BasicStroke(3));
+        g2d.drawRoundRect(boxX, boxY, boxWidth, boxHeight, 25, 25);
+
+        g2d.setColor(Color.YELLOW);
+        g2d.fillOval(boxX + 10, boxY + 10, 30, 30);
+
+        g2d.setColor(Color.WHITE);
+        g2d.setFont(new Font("Consolas", Font.BOLD, 24));
+        g2d.drawString("SCORE :", boxX + 50, boxY + 35);
+
+        g2d.setColor(Color.GREEN);
+        g2d.setFont(new Font("Consolas", Font.BOLD, 26));
+        g2d.drawString(String.valueOf(score/2), boxX + 170, boxY + 35);
     }
 
     public void update() {
@@ -143,7 +181,9 @@ public class Gamepanel extends JPanel implements Runnable {
                     Pipe p = it.next();
                     p.update();
                     if (p.isOffScreen()) {
-                        it.remove(); 
+                        it.remove();
+                        ++score;
+                        
                     }
                 }
                 pipeMoveCounter = 0;
@@ -158,7 +198,6 @@ public class Gamepanel extends JPanel implements Runnable {
         }
 
     }
-
 
     @Override
     public void run() {
