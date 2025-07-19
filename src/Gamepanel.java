@@ -15,7 +15,9 @@ import java.util.Iterator;
 import java.util.Random;
 
 import javax.imageio.ImageIO;
+import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.Timer;
 
 public class Gamepanel extends JPanel implements Runnable {
     public static int width = 360;
@@ -39,6 +41,7 @@ public class Gamepanel extends JPanel implements Runnable {
     public int pipeSpawnInterval = 170;
 
     // --------
+    private JButton tryAgainButton;
 
     public Gamepanel() {
         this.setPreferredSize(new Dimension(width, height));
@@ -49,6 +52,21 @@ public class Gamepanel extends JPanel implements Runnable {
         this.addKeyListener(keyHandler);
 
         gameSetUp();
+
+        // Try Again button setup
+        tryAgainButton = new JButton();
+        tryAgainButton.setBounds(95, 468, 170, 50); // Position based on resized image
+        tryAgainButton.setOpaque(false);
+        tryAgainButton.setContentAreaFilled(false);
+        tryAgainButton.setBorderPainted(false);
+        tryAgainButton.setFocusPainted(false);
+        tryAgainButton.setVisible(false); // Hidden until game over
+
+        tryAgainButton.addActionListener(e -> restartGame());
+
+        this.setLayout(null); // Important for absolute positioning
+        this.add(tryAgainButton);
+
     }
 
     private void gameSetUp() {
@@ -63,7 +81,7 @@ public class Gamepanel extends JPanel implements Runnable {
             lowerPipe = ImageIO.read(getClass().getResource("/assets/bottompipe.png"));
             upperPipe = ImageIO.read(getClass().getResource("/assets/toppipe.png"));
             pause = ImageIO.read(getClass().getResource("/assets/ChatGPT Image Jul 15, 2025, 04_59_12 PM.png"));
-            overPanel = ImageIO.read(getClass().getResource("/assets/game_over_360x640.png"));
+            overPanel = ImageIO.read(getClass().getResource("/assets/ChatGPT Image Jul 17, 2025, 11_52_35 PM.png"));
 
             /*
              * background = ImageIO.read(new
@@ -111,12 +129,17 @@ public class Gamepanel extends JPanel implements Runnable {
 
     @Override
     public void paintComponent(Graphics g) {
+
+        tryAgainButton.setVisible(false);
+
+        
         super.paintComponent(g);
 
         Graphics2D g2d = (Graphics2D) g;
 
         if (gameOver) {
             g2d.drawImage(overPanel, 0, 0, width, height, null);
+            tryAgainButton.setVisible(true);
             return;
         }
 
@@ -160,7 +183,7 @@ public class Gamepanel extends JPanel implements Runnable {
 
         g2d.setColor(Color.GREEN);
         g2d.setFont(new Font("Consolas", Font.BOLD, 26));
-        g2d.drawString(String.valueOf(score/2), boxX + 170, boxY + 35);
+        g2d.drawString(String.valueOf(score / 2), boxX + 170, boxY + 35);
     }
 
     public void update() {
@@ -183,7 +206,8 @@ public class Gamepanel extends JPanel implements Runnable {
                     if (p.isOffScreen()) {
                         it.remove();
                         ++score;
-                        
+                        makeHarder();
+
                     }
                 }
                 pipeMoveCounter = 0;
@@ -197,6 +221,18 @@ public class Gamepanel extends JPanel implements Runnable {
             checkCollision();
         }
 
+    }
+
+    public void makeHarder() {
+        if (score >= 5) {
+            pipeSpawnInterval = 130;
+            pipeMoveInterval = 3;
+        } else if (score >= 10) {
+            pipeSpawnInterval = 110;
+            pipeMoveInterval = 3;
+        } else if (score >= 16) {
+            pipeSpawnInterval = 80;
+        }
     }
 
     @Override
@@ -252,6 +288,21 @@ public class Gamepanel extends JPanel implements Runnable {
                 return;
             }
         }
+    }
+
+    // temp }
+
+    private void restartGame() {
+        // Reset game state
+        bird = new Bird(width / 8, height / 2);
+        pipes.clear();
+        score = 0;
+        pipeSpawnInterval = 170;
+        pipeMoveInterval = 4;
+        pipeMoveCounter = 0;
+        pipeSpawnCounter = 0;
+        gameOver = false;
+        tryAgainButton.setVisible(false); // Hide button again
     }
 
 }
